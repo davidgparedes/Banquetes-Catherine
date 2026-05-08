@@ -17,14 +17,19 @@
         }
         body { background-color: var(--beige); color: var(--texto); font-family: 'Segoe UI', sans-serif; }
         .navbar { background-color: var(--cafe-oscuro); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .card { border: none; border-radius: 15px; transition: 0.3s; }
+        .card { border: none; border-radius: 15px; transition: 0.3s; overflow: hidden; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .card-img-top { height: 220px; object-fit: cover; }
         .btn-cafe { background-color: var(--cafe-oscuro); color: white; border-radius: 50px; font-weight: bold; border: none; }
         .btn-cafe:hover { background-color: var(--cafe-claro); color: var(--cafe-oscuro); }
-        .icon-box { font-size: 2.5rem; color: var(--cafe-oscuro); margin-bottom: 15px; }
+        .icon-box { font-size: 2rem; color: var(--cafe-oscuro); }
         .hidden { display: none; }
         .nav-link { color: var(--crema) !important; font-weight: 500; margin: 0 10px; cursor: pointer; }
         .nav-link:hover { color: white !important; text-decoration: underline; }
+        .pico-abril { background-color: #fff3f3; border-left: 5px solid #dc3545; }
+        
+        /* Estilo simple para el mini-organigrama */
+        .org-node { background: white; border: 1px solid var(--cafe-claro); border-radius: 8px; padding: 5px; font-size: 0.8rem; margin: 2px; display: inline-block; min-width: 80px; }
     </style>
 </head>
 <body>
@@ -49,27 +54,36 @@
 
     <div class="row g-4 mb-5 text-center">
         <div class="col-md-4">
-            <div class="card p-4 h-100 shadow-sm">
-                <div class="icon-box"><i class="bi bi-mortarboard"></i></div>
-                <h4>Graduaciones</h4>
-                <p class="text-muted">Paquetes todo incluido para celebrar el éxito.</p>
-                <h5 class="text-primary">$450 p/p</h5>
+            <div class="card h-100 shadow-sm">
+                <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Graduaciones">
+                <div class="card-body">
+                    <div class="icon-box"><i class="bi bi-mortarboard"></i></div>
+                    <h4>Graduaciones</h4>
+                    <p class="text-muted">Paquetes todo incluido para celebrar el éxito.</p>
+                    <h5 class="text-primary fw-bold">$450 p/p</h5>
+                </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card p-4 h-100 shadow-sm">
-                <div class="icon-box"><i class="bi bi-hearts"></i></div>
-                <h4>Bodas de Gala</h4>
-                <p class="text-muted">Elegancia y sabor para el gran día.</p>
-                <h5 class="text-primary">$850 p/p</h5>
+            <div class="card h-100 shadow-sm">
+                <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Bodas">
+                <div class="card-body">
+                    <div class="icon-box"><i class="bi bi-hearts"></i></div>
+                    <h4>Bodas de Gala</h4>
+                    <p class="text-muted">Elegancia y sabor para el gran día.</p>
+                    <h5 class="text-primary fw-bold">$850 p/p</h5>
+                </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card p-4 h-100 shadow-sm">
-                <div class="icon-box"><i class="bi bi-building-check"></i></div>
-                <h4>Corporativos</h4>
-                <p class="text-muted">Profesionalismo en cada platillo.</p>
-                <h5 class="text-primary">$300 p/p</h5>
+            <div class="card h-100 shadow-sm">
+                <img src="https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Corporativos">
+                <div class="card-body">
+                    <div class="icon-box"><i class="bi bi-building-check"></i></div>
+                    <h4>Corporativos</h4>
+                    <p class="text-muted">Profesionalismo en cada platillo.</p>
+                    <h5 class="text-primary fw-bold">$300 p/p</h5>
+                </div>
             </div>
         </div>
     </div>
@@ -80,7 +94,7 @@
                 <h3 class="text-center mb-4"><i class="bi bi-calculator me-2"></i>Cotizador Rápido</h3>
                 <form id="form-pedido">
                     <div class="mb-3">
-                        <label class="form-label"><i class="bi bi-star-fill me-1"></i> Tipo de Evento</label>
+                        <label class="form-label fw-bold">Tipo de Evento</label>
                         <select id="tipo-evento" class="form-select" onchange="calcular()">
                             <option value="450">Graduación ($450 MXN)</option>
                             <option value="850">Boda de Gala ($850 MXN)</option>
@@ -88,11 +102,11 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label"><i class="bi bi-people-fill me-1"></i> Número de Invitados</label>
+                        <label class="form-label fw-bold">Número de Invitados</label>
                         <input type="number" id="num-invitados" class="form-control" placeholder="Ej. 150" oninput="calcular()">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label"><i class="bi bi-calendar-event me-1"></i> Fecha tentativa</label>
+                        <label class="form-label fw-bold">Fecha tentativa</label>
                         <input type="date" id="fecha-evento" class="form-control">
                     </div>
                     <div class="p-3 my-4 text-center rounded bg-light border">
@@ -109,28 +123,57 @@
 
 <section id="seccion-staff" class="container py-5 hidden">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 style="color: var(--cafe-oscuro);"><i class="bi bi-calendar3 me-2"></i>Agenda de Eventos</h2>
-        <span class="badge bg-dark px-3 py-2">Temporada 2026</span>
+        <h2 style="color: var(--cafe-oscuro);"><i class="bi bi-graph-up-arrow me-2"></i>Módulo de Operaciones</h2>
+        <span class="badge bg-dark px-3 py-2">Administración UPIICSA</span>
     </div>
-    
-    <div class="alert alert-warning border-start border-4 border-warning shadow-sm">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <b>Atención meseros:</b> Revisen aquí los cambios de último minuto en el número de invitados[cite: 60].
+
+    <div class="row g-3 mb-5">
+        <div class="col-md-5">
+            <div class="card p-4 pico-abril h-100 shadow-sm">
+                <h5 class="text-danger"><i class="bi bi-calendar-x-fill me-2"></i>Pico Histórico de Abril</h5>
+                <p class="small text-muted">Estrategia basada en análisis de demanda:</p>
+                <ul class="small">
+                    <li><strong>Abasto alto inventario:</strong> Garantizar insumos antes de temporada.</li>
+                    <li><strong>Contratos temporales:</strong> Refuerzo de personal eventual.</li>
+                    <li><strong>Preveer errores:</strong> Control de calidad riguroso en servicio.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card p-4 h-100 shadow-sm" style="background-color: #f8f9fa; border-left: 5px solid var(--cafe-oscuro);">
+                <h5 class="mb-3 text-center"><i class="bi bi-diagram-3-fill me-2"></i>Organigrama Operativo</h5>
+                <div class="text-center">
+                    <div class="org-node fw-bold bg-dark text-white w-50">DIRECCIÓN GENERAL</div><br>
+                    <div class="bi bi-arrow-down"></div><br>
+                    <div class="d-flex justify-content-center flex-wrap">
+                        <div class="org-node">COCINA</div>
+                        <div class="org-node">MESEROS</div>
+                        <div class="org-node">LIMPIEZA</div>
+                        <div class="org-node">FLORISTA</div>
+                        <div class="org-node">ACÚSTICO</div>
+                    </div>
+                    <p class="mt-3 x-small text-muted fst-italic">Refuerzo mediante Analista S.M. en Temporada Alta</p>
+                </div>
+            </div>
+        </div>
     </div>
-    
+
     <div class="card bg-white shadow-sm overflow-hidden">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0 py-1">Eventos Confirmados (Base de Datos)</h5>
+        </div>
         <div class="table-responsive">
             <table class="table table-hover mb-0">
-                <thead class="table-dark">
+                <thead class="table-light text-center">
                     <tr>
-                        <th><i class="bi bi-calendar-check me-1"></i> Fecha</th>
-                        <th><i class="bi bi-tag me-1"></i> Evento</th>
-                        <th><i class="bi bi-people me-1"></i> Pax</th>
-                        <th><i class="bi bi-cash-stack me-1"></i> Total</th>
+                        <th>Fecha</th>
+                        <th>Evento</th>
+                        <th>Pax</th>
+                        <th>Total</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-pedidos"></tbody>
+                <tbody id="tabla-pedidos" class="text-center"></tbody>
             </table>
         </div>
     </div>
@@ -168,7 +211,7 @@
         historial.push(pedido);
         localStorage.setItem('pedidos_catherine', JSON.stringify(historial));
 
-        alert("¡Reserva enviada! El equipo de Catherine la revisará pronto.");
+        alert("¡Reserva enviada con éxito!");
         document.getElementById('form-pedido').reset();
         document.getElementById('display-total').innerText = '$0.00';
     }
@@ -176,7 +219,7 @@
     function cargarPedidos() {
         const tabla = document.getElementById('tabla-pedidos');
         const datos = JSON.parse(localStorage.getItem('pedidos_catherine')) || [];
-        tabla.innerHTML = datos.length === 0 ? '<tr><td colspan="5" class="text-center p-4 text-muted">No hay eventos registrados aún.</td></tr>' : '';
+        tabla.innerHTML = datos.length === 0 ? '<tr><td colspan="5" class="text-center p-4 text-muted">Esperando nuevos registros...</td></tr>' : '';
         
         datos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).forEach(p => {
             tabla.innerHTML += `
@@ -184,8 +227,8 @@
                     <td><b>${p.fecha}</b></td>
                     <td>${p.tipo}</td>
                     <td>${p.invitados}</td>
-                    <td>$${p.total.toLocaleString()}</td>
-                    <td><span class="badge bg-success"><i class="bi bi-check2-circle me-1"></i>Confirmado</span></td>
+                    <td class="text-success fw-bold">$${p.total.toLocaleString()}</td>
+                    <td><span class="badge bg-success">Confirmado</span></td>
                 </tr>`;
         });
     }
