@@ -4,116 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Banquetes Catherine | Gestión de Eventos</title>
+    <!-- Bootstrap 5.3.0 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Chart.js para gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            --beige: #F5F5DC;
-            --crema: #FFFDD0;
-            --cafe-claro: #D2B48C;
-            --cafe-oscuro: #5C4033;
-            --texto: #3E2723;
+            --primary-color: #34495e;
+            --secondary-color: #f1c40f;
+            --text-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --accent-green: #2ecc71;
         }
-        body { background-color: var(--beige); color: var(--texto); font-family: 'Segoe UI', sans-serif; }
-        .navbar { background-color: var(--cafe-oscuro); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .card { border: none; border-radius: 15px; transition: 0.3s; overflow: hidden; }
+        body { background-color: var(--background-color); color: var(--text-color); font-family: 'Open Sans', sans-serif; }
+        
+        /* Navbar */
+        .navbar { background-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .nav-link { color: #fdfefe !important; font-weight: 500; margin: 0 10px; cursor: pointer; transition: 0.3s; }
+        .nav-link:hover { color: var(--secondary-color) !important; text-decoration: underline; transform: scale(1.05); }
+        
+        /* Tarjetas Generales */
+        .card { border: none; border-radius: 15px; transition: 0.3s; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .card-img-top { height: 220px; object-fit: cover; }
-        .btn-cafe { background-color: var(--cafe-oscuro); color: white; border-radius: 50px; font-weight: bold; border: none; }
-        .btn-cafe:hover { background-color: var(--cafe-claro); color: var(--cafe-oscuro); }
-        .icon-box { font-size: 2rem; color: var(--cafe-oscuro); }
-        .hidden { display: none; }
-        .nav-link { color: var(--crema) !important; font-weight: 500; margin: 0 10px; cursor: pointer; }
-        .nav-link:hover { color: white !important; text-decoration: underline; }
-        .pico-abril { background-color: #fff3f3; border-left: 5px solid #dc3545; }
         
-        /* Estilo simple para el mini-organigrama */
-        .org-node { background: white; border: 1px solid var(--cafe-claro); border-radius: 8px; padding: 5px; font-size: 0.8rem; margin: 2px; display: inline-block; min-width: 80px; }
+        /* Botones */
+        .btn-primary { background-color: var(--primary-color); border: none; border-radius: 50px; font-weight: bold; transition: 0.3s; }
+        .btn-primary:hover { background-color: #2c3e50; transform: scale(1.03); }
+        
+        /* Sección Cliente */
+        .icon-box { font-size: 2.5rem; color: var(--secondary-color); margin-bottom: 15px; }
+        .price-tag { color: var(--primary-color); font-weight: bold; font-size: 1.25rem; }
+        
+        /* Sección Staff */
+        .hidden { display: none; }
+        .stat-card { background-color: #fdfefe; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: 100%; border-left: 5px solid var(--primary-color); }
+        .stat-icon { font-size: 2rem; color: var(--primary-color); opacity: 0.7; }
+        .pico-abril { background-color: #fff3f3; border-left: 5px solid #e74c3c; color: #c0392b; }
+        .chart-container { position: relative; height: 250px; width: 100%; }
+
+        /* --- ESTILOS DEL ORGANIGRAMA MEJORADO (Pure CSS) --- */
+        .org-container { display: flex; justify-content: center; padding: 20px 0; overflow-x: auto; }
+        .tree ul { padding-top: 20px; position: relative; transition: all 0.5s; display: flex; justify-content: center; }
+        .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; transition: all 0.5s; }
+        
+        /* Conectores horizontales */
+        .tree li::before, .tree li::after{ content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #ccc; width: 50%; height: 20px; }
+        .tree li::after{ right: auto; left: 50%; border-left: 2px solid #ccc; }
+        
+        /* Quitar conectores de elementos únicos */
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child{ padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after{ border: 0 none; }
+        .tree li:last-child::before{ border-right: 2px solid #ccc; border-radius: 0 5px 0 0; }
+        .tree li:first-child::after{ border-radius: 5px 0 0 0; }
+        
+        /* Conectores verticales desde el padre */
+        .tree ul ul::before{ content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #ccc; width: 0; height: 20px; }
+        
+        /* Estilo de los nodos */
+        .org-node { background: white; border: 2px solid var(--primary-color); color: var(--primary-color); padding: 10px 15px; text-decoration: none; font-weight: bold; font-size: 0.85rem; border-radius: 8px; display: inline-block; transition: 0.3s; min-width: 120px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .org-node:hover { background: var(--primary-color); color: white; transform: translateY(-3px); }
+        .org-node i { display: block; font-size: 1.2rem; margin-bottom: 5px; color: var(--secondary-color); }
+        .org-node small { display: block; font-weight: normal; color: #7f8c8d; font-size: 0.75rem; }
+        .org-node:hover small { color: #ecf0f1; }
+        /* --------------------------------------------------- */
     </style>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
         <span class="navbar-brand text-white fw-bold">
             <i class="bi bi-cup-hot-fill me-2"></i>BANQUETES CATHERINE
         </span>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" onclick="mostrarSeccion('cliente')"><i class="bi bi-person-heart me-1"></i> Clientes</a>
-            <a class="nav-link" onclick="mostrarSeccion('staff')"><i class="bi bi-clipboard-data me-1"></i> Módulo Staff</a>
+        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" onclick="mostrarSeccion('cliente')"><i class="bi bi-person-heart me-1"></i> Área Clientes</a>
+                <a class="nav-link" onclick="mostrarSeccion('staff')"><i class="bi bi-clipboard-data me-1"></i> Módulo Staff</a>
+            </div>
         </div>
     </div>
 </nav>
 
+<!-- SECCIÓN CLIENTE -->
 <section id="seccion-cliente" class="container py-5">
     <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold" style="color: var(--cafe-oscuro);">Servicios Exclusivos</h1>
-        <p class="lead">Todo lo que necesitas para tu evento en un solo lugar.</p>
+        <h1 class="display-5 fw-bold" style="color: var(--primary-color);">Servicios Exclusivos</h1>
+        <p class="lead text-muted">Hacemos realidad el evento de tus sueños con la mejor gastronomía y logística.</p>
     </div>
 
+    <!-- Cards de Servicios -->
     <div class="row g-4 mb-5 text-center">
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100">
                 <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Graduaciones">
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     <div class="icon-box"><i class="bi bi-mortarboard"></i></div>
-                    <h4>Graduaciones</h4>
-                    <p class="text-muted">Paquetes todo incluido para celebrar el éxito.</p>
-                    <h5 class="text-primary fw-bold">$450 p/p</h5>
+                    <h4 class="card-title">Graduaciones</h4>
+                    <p class="card-text text-muted flex-grow-1">Paquetes todo incluido para celebrar el fin de una etapa inolvidable.</p>
+                    <p class="price-tag mt-3">$450 <small>p/p MXN</small></p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100">
                 <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Bodas">
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     <div class="icon-box"><i class="bi bi-hearts"></i></div>
-                    <h4>Bodas de Gala</h4>
-                    <p class="text-muted">Elegancia y sabor para el gran día.</p>
-                    <h5 class="text-primary fw-bold">$850 p/p</h5>
+                    <h4 class="card-title">Bodas de Gala</h4>
+                    <p class="card-text text-muted flex-grow-1">Elegancia, distinción y un menú exquisito para el día más importante.</p>
+                    <p class="price-tag mt-3">$850 <small>p/p MXN</small></p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100">
                 <img src="https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop" class="card-img-top" alt="Corporativos">
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     <div class="icon-box"><i class="bi bi-building-check"></i></div>
-                    <h4>Corporativos</h4>
-                    <p class="text-muted">Profesionalismo en cada platillo.</p>
-                    <h5 class="text-primary fw-bold">$300 p/p</h5>
+                    <h4 class="card-title">Corporativos</h4>
+                    <p class="card-text text-muted flex-grow-1">Profesionalismo y puntualidad para coffee breaks, lanzamientos y cenas.</p>
+                    <p class="price-tag mt-3">$300 <small>p/p MXN</small></p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Cotizador -->
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card p-4 shadow bg-white border-top border-5" style="border-top-color: var(--cafe-claro) !important;">
-                <h3 class="text-center mb-4"><i class="bi bi-calculator me-2"></i>Cotizador Rápido</h3>
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-4 shadow-lg bg-white border-top border-5 cotizador-card" style="border-top-color: var(--secondary-color) !important;">
+                <h3 class="text-center mb-4"><i class="bi bi-calculator me-2"></i>Cotizador Rápido y Reserva</h3>
                 <form id="form-pedido">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Tipo de Evento</label>
-                        <select id="tipo-evento" class="form-select" onchange="calcular()">
+                        <label class="form-label fw-bold">1. Selecciona el Tipo de Evento</label>
+                        <select id="tipo-evento" class="form-select select-lg" onchange="calcular()">
                             <option value="450">Graduación ($450 MXN)</option>
                             <option value="850">Boda de Gala ($850 MXN)</option>
                             <option value="300">Corporativo ($300 MXN)</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Número de Invitados</label>
-                        <input type="number" id="num-invitados" class="form-control" placeholder="Ej. 150" oninput="calcular()">
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-bold">2. No. Invitados</label>
+                            <input type="number" id="num-invitados" class="form-control" placeholder="Ej. 100" min="1" oninput="calcular()">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-bold">3. Fecha Tentativa</label>
+                            <input type="date" id="fecha-evento" class="form-control">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha tentativa</label>
-                        <input type="date" id="fecha-evento" class="form-control">
+                    <div class="p-3 my-4 text-center rounded bg-light border border-secondary-subtle">
+                        <h5 class="text-muted mb-1">Total Estimado</h5>
+                        <h2 class="mb-0 text-success fw-bold" id="display-total">$0.00</h2>
                     </div>
-                    <div class="p-3 my-4 text-center rounded bg-light border">
-                        <h4 class="mb-0">Total: <span id="display-total" class="text-success">$0.00</span></h4>
-                    </div>
-                    <button type="button" class="btn btn-cafe w-100 py-3 shadow-sm" onclick="guardarPedido()">
-                        <i class="bi bi-send-check-fill me-2"></i>SOLICITAR RESERVA
+                    <button type="button" class="btn btn-primary btn-lg w-100 py-3 shadow" onclick="guardarPedido()">
+                        <i class="bi bi-calendar-plus me-2"></i>SOLICITAR RESERVA
                     </button>
                 </form>
             </div>
@@ -121,117 +175,830 @@
     </div>
 </section>
 
+<!-- SECCIÓN STAFF -->
 <section id="seccion-staff" class="container py-5 hidden">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 style="color: var(--cafe-oscuro);"><i class="bi bi-graph-up-arrow me-2"></i>Módulo de Operaciones</h2>
-        <span class="badge bg-dark px-3 py-2">Administración UPIICSA</span>
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h2 style="color: var(--primary-color);"><i class="bi bi-speedometer2 me-2"></i>Panel de Control Operativo</h2>
+        <span class="badge bg-dark px-3 py-2 fs-6 rounded-pill">Área Administrativa</span>
     </div>
 
-    <div class="row g-3 mb-5">
-        <div class="col-md-5">
-            <div class="card p-4 pico-abril h-100 shadow-sm">
-                <h5 class="text-danger"><i class="bi bi-calendar-x-fill me-2"></i>Pico Histórico de Abril</h5>
-                <p class="small text-muted">Estrategia basada en análisis de demanda:</p>
-                <ul class="small">
-                    <li><strong>Abasto alto inventario:</strong> Garantizar insumos antes de temporada.</li>
-                    <li><strong>Contratos temporales:</strong> Refuerzo de personal eventual.</li>
-                    <li><strong>Preveer errores:</strong> Control de calidad riguroso en servicio.</li>
-                </ul>
+    <!-- Alerta y Organigrama Mejorado -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="stat-card pico-abril d-flex flex-column justify-content-center">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-1 me-3"></i>
+                    <h5 class="card-title mb-0 fw-bold">Alerta de Temporada Alta</h5>
+                </div>
+                <p class="small mb-1"><strong>Abril:</strong> Históricamente presenta pico de demanda.</p>
+                <p class="small mb-0 fst-italic">Llevar control riguroso de inventario y personal eventual.</p>
             </div>
         </div>
-        <div class="col-md-7">
-            <div class="card p-4 h-100 shadow-sm" style="background-color: #f8f9fa; border-left: 5px solid var(--cafe-oscuro);">
-                <h5 class="mb-3 text-center"><i class="bi bi-diagram-3-fill me-2"></i>Organigrama Operativo</h5>
-                <div class="text-center">
-                    <div class="org-node fw-bold bg-dark text-white w-50">DIRECCIÓN GENERAL</div><br>
-                    <div class="bi bi-arrow-down"></div><br>
-                    <div class="d-flex justify-content-center flex-wrap">
-                        <div class="org-node">COCINA</div>
-                        <div class="org-node">MESEROS</div>
-                        <div class="org-node">LIMPIEZA</div>
-                        <div class="org-node">FLORISTA</div>
-                        <div class="org-node">ACÚSTICO</div>
-                    </div>
-                    <p class="mt-3 x-small text-muted fst-italic">Refuerzo mediante Analista S.M. en Temporada Alta</p>
+        
+        <!-- MEJORA: Organigrama Operativo Visual -->
+        <div class="col-lg-8">
+            <div class="card h-100 bg-white shadow-sm">
+                <div class="card-header bg-white border-0 pt-3 pb-0 text-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-diagram-3 me-2"></i>Estructura Organizativa de Evento</h5>
+                </div>
+                <div class="card-body p-0 org-container tree">
+                    <ul>
+                        <li>
+                            <a href="#" class="org-node">
+                                <i class="bi bi-person-badge"></i>Gerencia de Evento
+                                <small>Responsable Final</small>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="#" class="org-node">
+                                        <i class="bi bi-egg-fried"></i>Jefe de Cocina
+                                        <small>Menú y Emplatado</small>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="org-node">
+                                        <i class="bi bi-truck"></i>Logística
+                                        <small>Montaje y Transporte</small>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="org-node">
+                                        <i class="bi bi-person-walking"></i>Capitán de Meseros
+                                        <small>Servicio a Mesas</small>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card bg-white shadow-sm overflow-hidden">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0 py-1">Eventos Confirmados (Base de Datos)</h5>
+    <!-- KPIs y Gráficas Reales -->
+    <div class="row g-4 mb-5">
+        <!-- KPIs Numericos -->
+        <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center">
+                <i class="bi bi-currency-dollar stat-icon me-3"></i>
+                <div>
+                    <h6 class="text-muted mb-1">Ingresos Confirmados</h6>
+                    <h3 class="fw-bold mb-0 text-success" id="total-revenue">$0.00</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center">
+                <i class="bi bi-calendar-check stat-icon me-3"></i>
+                <div>
+                    <h6 class="text-muted mb-1">Eventos Próximos</h6>
+                    <h3 class="fw-bold mb-0" id="upcoming-events">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center">
+                <i class="bi bi-people stat-icon me-3"></i>
+                <div>
+                    <h6 class="text-muted mb-1">Total Invitados (Atendidos/Por atender)</h6>
+                    <h3 class="fw-bold mb-0" id="total-guests">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEJORA: Gráficas Reales con Chart.js -->
+        <div class="col-md-7">
+            <div class="card bg-white p-3 shadow-sm h-100">
+                <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2"></i>Flujo de Ingresos por Mes</h6>
+                <div class="chart-container">
+                    <canvas id="incomeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card bg-white p-3 shadow-sm h-100">
+                <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2"></i>Mix de Eventos</h6>
+                <div class="chart-container d-flex justify-content-center align-items-center">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Eventos -->
+    <div class="card bg-white shadow-sm overflow-hidden mb-5">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold">Lista de Eventos Confirmados</h5>
+            <button class="btn btn-light btn-sm rounded-pill" onclick="generarDatosEjemplo()"><i class="bi bi-database-fill-add me-1"></i>Cargar Demo</button>
         </div>
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light text-center">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark text-center">
                     <tr>
-                        <th>Fecha</th>
-                        <th>Evento</th>
+                        <th>Fecha <i class="bi bi-sort-down small"></i></th>
+                        <th>Tipo de Evento</th>
                         <th>Pax</th>
-                        <th>Total</th>
+                        <th>Total Cotizado</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-pedidos" class="text-center"></tbody>
+                <tbody id="tabla-pedidos" class="text-center align-middle"></tbody>
             </table>
         </div>
     </div>
 </section>
 
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+        <small>&copy; 2023 Banquetes Catherine - Sistema de Gestión Interna. Software con fines educativos.</small>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+    // Variables globales para las gráficas
+    let incomeChart, typeChart;
+
+    // --- Navegación ---
     function mostrarSeccion(seccion) {
         document.getElementById('seccion-cliente').classList.add('hidden');
         document.getElementById('seccion-staff').classList.add('hidden');
         document.getElementById('seccion-' + seccion).classList.remove('hidden');
-        if(seccion === 'staff') cargarPedidos();
+        
+        // Actualizar navbar activa (Bootstrap nativo no lo hace automáticamente con onclick)
+        const links = document.querySelectorAll('.nav-link');
+        links.forEach(link => link.classList.remove('active', 'fw-bold', 'text-secondary'));
+        
+        const currentLink = Array.from(links).find(link => link.getAttribute('onclick').includes(seccion));
+        if (currentLink) currentLink.classList.add('fw-bold', 'text-secondary');
+
+        if(seccion === 'staff') cargarDashboardStaff();
     }
 
+    // --- Lógica Cliente (Cotizador) ---
     function calcular() {
-        const precio = document.getElementById('tipo-evento').value;
-        const cantidad = document.getElementById('num-invitados').value;
-        const total = (precio * cantidad) || 0;
-        document.getElementById('display-total').innerText = '$' + total.toLocaleString('es-MX') + ' MXN';
+        const precio = parseFloat(document.getElementById('tipo-evento').value);
+        const cantidad = parseInt(document.getElementById('num-invitados').value) || 0;
+        const total = precio * cantidad;
+        document.getElementById('display-total').innerText = '$' + total.toLocaleString('es-MX', {minimumFractionDigits: 2}) + ' MXN';
         return total;
     }
 
     function guardarPedido() {
         const fecha = document.getElementById('fecha-evento').value;
-        const invitados = document.getElementById('num-invitados').value;
-        const tipo = document.getElementById('tipo-evento').options[document.getElementById('tipo-evento').selectedIndex].text.split(' (')[0];
+        const invitados = parseInt(document.getElementById('num-invitados').value);
+        const tipoCombo = document.getElementById('tipo-evento');
+        const tipoTexto = tipoCombo.options[tipoCombo.selectedIndex].text.split(' (')[0];
         const total = calcular();
 
         if(!fecha || invitados <= 0) {
-            alert("Por favor, ingresa una fecha y número de invitados válidos.");
+            alert("⚠️ Por favor, ingresa una fecha válida y número de invitados mayor a cero.");
             return;
         }
 
-        const pedido = { fecha, tipo, invitados, total };
-        let historial = JSON.parse(localStorage.getItem('pedidos_catherine')) || [];
-        historial.push(pedido);
-        localStorage.setItem('pedidos_catherine', JSON.stringify(historial));
+        const pedido = { 
+            id: Date.now(),
+            fecha, 
+            tipo: tipoTexto, 
+            invitados, 
+            total, 
+            status: 'Confirmado' 
+        };
 
-        alert("¡Reserva enviada con éxito!");
+        let historial = JSON.parse(localStorage.getItem('pedidos_catherine_v2')) || [];
+        historial.push(pedido);
+        localStorage.setItem('pedidos_catherine_v2', JSON.stringify(historial));
+
+        alert("✅ Solicitud enviada con éxito. Revisar en Módulo Staff.");
         document.getElementById('form-pedido').reset();
         document.getElementById('display-total').innerText = '$0.00';
     }
 
-    function cargarPedidos() {
+    // --- Lógica Staff (Dashboard y Tabla) ---
+    function cargarDashboardStaff() {
+        const datos = JSON.parse(localStorage.getItem('pedidos_catherine_v2')) || [];
+        cargarTablaPedidos(datos);
+        actualizarKPIs(datos);
+        inicializarOActualizarGraficas(datos);
+    }
+
+    function cargarTablaPedidos(datos) {
         const tabla = document.getElementById('tabla-pedidos');
-        const datos = JSON.parse(localStorage.getItem('pedidos_catherine')) || [];
-        tabla.innerHTML = datos.length === 0 ? '<tr><td colspan="5" class="text-center p-4 text-muted">Esperando nuevos registros...</td></tr>' : '';
-        
-        datos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).forEach(p => {
+        tabla.innerHTML = '';
+
+        if (datos.length === 0) {
+            tabla.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-muted"><i class="bi bi-inbox me-2"></i>No hay eventos registrados aún.</td></tr>';
+            return;
+        }
+
+        // Ordenar por fecha descendente
+        datos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach((p) => {
+            const fechaFormateada = new Date(p.fecha + 'T00:00:00').toLocaleDateString('es-MX');
             tabla.innerHTML += `
                 <tr>
-                    <td><b>${p.fecha}</b></td>
-                    <td>${p.tipo}</td>
-                    <td>${p.invitados}</td>
-                    <td class="text-success fw-bold">$${p.total.toLocaleString()}</td>
-                    <td><span class="badge bg-success">Confirmado</span></td>
+                    <td><b>${fechaFormateada}</b></td>
+                    <td>${p.tipo}Está claro que el código original necesitaba más contenido y una ejecución real de las promesas de diseño (como el organigrama y las gráficas).
+
+He mejorado y ampliado el código. Aquí tienes los cambios realizados:
+
+1.  **Organigrama Operativo Visual (Mejora solicitada):** He implementado un organigrama jerárquico y visual utilizando **puro CSS** y HTML estructurado dentro del Módulo Staff. Ya no es un recuadro vacío; ahora muestra la estructura de mando típica de un evento (Gerencia $\rightarrow$ Cocina, Logística, Servicio).
+2.  **Integración de Gráficas Reales (Añadido):** He integrado la librería **Chart.js** (vía CDN). En el Módulo Staff, he sustituido los placeholders vacíos por dos gráficas funcionales que se alimentan dinámicamente de los datos de pedidos almacenados en el navegador:
+    *   **Gráfica de Barras:** Muestra el flujo de ingresos mensual.
+    *   **Gráfica de Dona:** Muestra el mix de tipos de eventos.
+3.  **Botón de Datos Demo (Añadido):** He añadido un botón en la tabla de Staff para cargar datos de ejemplo automáticamente, facilitando la prueba de las gráficas y la tabla sin tener que escribir pedidos manualmente.
+4.  **Mejoras de UI/UX:**
+    *   Iconos añadidos a las tarjetas de KPI del Staff.
+    *   Navegación mejorada (resaltado del menú activo).
+    *   Estilos visuales más pulidos en las tarjetas de servicio y el cotizador.
+
+Aquí tienes el código completo y corregido:
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banquetes Catherine | Gestión de Eventos Pro</title>
+    <!-- Bootstrap 5.3.0 -->
+    <link href="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css)" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="[https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css](https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css)">
+    <!-- Chart.js para gráficas reales -->
+    <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
+    
+    <style>
+        :root {
+            --primary-color: #34495e; /* Azul Grisáceo */
+            --secondary-color: #f1c40f; /* Amarillo Prestigio */
+            --text-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --accent-green: #2ecc71;
+            --accent-red: #e74c3c;
+        }
+        body { background-color: var(--background-color); color: var(--text-color); font-family: 'Open Sans', sans-serif; overflow-x: hidden; }
+        
+        /* Navbar estilización */
+        .navbar { background-color: var(--primary-color); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .nav-link { color: #fdfefe !important; font-weight: 500; margin: 0 10px; cursor: pointer; transition: 0.3s; border-radius: 5px; }
+        .nav-link:hover, .nav-link.active { background-color: rgba(255,255,255,0.1); color: var(--secondary-color) !important; }
+        
+        /* Tarjetas y Efectos */
+        .card { border: none; border-radius: 15px; transition: transform 0.3s, box-shadow 0.3s; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+        .card-img-top { height: 220px; object-fit: cover; }
+        
+        /* Botones personalizados */
+        .btn-primary { background-color: var(--primary-color); border: none; border-radius: 50px; font-weight: bold; padding: 10px 25px; transition: 0.3s; }
+        .btn-primary:hover { background-color: #2c3e50; transform: scale(1.03); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        /* Sección Cliente */
+        .icon-box { font-size: 2.5rem; color: var(--secondary-color); margin-bottom: 15px; }
+        .price-tag { color: var(--primary-color); font-weight: bold; font-size: 1.3rem; }
+        
+        /* Sección Staff - General */
+        .hidden { display: none; }
+        .stat-card { background-color: #fdfefe; border-radius: 15px; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: 100%; border-left: 5px solid var(--primary-color); transition: 0.3s; }
+        .stat-card:hover { border-left-color: var(--secondary-color); background-color: #fff; }
+        .stat-icon { font-size: 2.5rem; color: var(--primary-color); opacity: 0.7; }
+        .pico-abril { background-color: #fff3f3; border-left: 5px solid var(--accent-red); color: #c0392b; }
+        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+
+        /* --- ESTILOS DEL ORGANIGRAMA MEJORADO (Pure CSS Jerárquico) --- */
+        .org-container { display: flex; justify-content: center; padding: 20px 0; overflow-x: auto; }
+        .tree ul { padding-top: 20px; position: relative; transition: all 0.5s; display: flex; justify-content: center; width: 100%; padding-left: 0; }
+        .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; transition: all 0.5s; }
+        
+        /* Conectores horizontales */
+        .tree li::before, .tree li::after{ content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #ccc; width: 50%; height: 20px; }
+        .tree li::after{ right: auto; left: 50%; border-left: 2px solid #ccc; }
+        
+        /* Quitar conectores de elementos únicos/extremos */
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child{ padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after{ border: 0 none; }
+        .tree li:last-child::before{ border-right: 2px solid #ccc; border-radius: 0 5px 0 0; }
+        .tree li:first-child::after{ border-radius: 5px 0 0 0; }
+        
+        /* Conector vertical desde el padre */
+        .tree ul ul::before{ content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #ccc; width: 0; height: 20px; }
+        
+        /* Estilo de los nodos */
+        .org-node { background: white; border: 2px solid var(--primary-color); color: var(--primary-color); padding: 12px 18px; text-decoration: none; font-weight: bold; font-size: 0.9rem; border-radius: 10px; display: inline-block; transition: 0.3s; box-shadow: 0 3px 6px rgba(0,0,0,0.1); min-width: 140px; }
+        .org-node:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
+        .org-node i { display: block; font-size: 1.4rem; margin-bottom: 6px; color: var(--secondary-color); }
+        .org-node small { display: block; font-weight: normal; color: #7f8c8d; font-size: 0.8rem; margin-top: 2px; }
+        .org-node:hover small { color: #ecf0f1; }
+        /* --------------------------------------------------- */
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top navbar-dark">
+    <div class="container">
+        <span class="navbar-brand fw-bold">
+            <i class="bi bi-cup-hot-fill me-2 text-secondary"></i>BANQUETES CATHERINE
+        </span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" id="nav-cliente" onclick="mostrarSeccion('cliente')"><i class="bi bi-person-heart me-1"></i> Área Clientes</a>
+                <a class="nav-link" id="nav-staff" onclick="mostrarSeccion('staff')"><i class="bi bi-clipboard-data me-1"></i> Módulo Staff</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- SECCIÓN CLIENTE -->
+<section id="seccion-cliente" class="container py-5">
+    <div class="text-center mb-5 mt-3">
+        <h1 class="display-5 fw-bold" style="color: var(--primary-color);">Planea tu Evento Soñado</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 700px;">Experiencia gastronómica y logística impecable para momentos inolvidables. Cotiza y reserva en línea.</p>
+    </div>
+
+    <!-- Cards de Servicios -->
+    <div class="row g-4 mb-5 text-center justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <img src="[https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop)" class="card-img-top" alt="Graduaciones">
+                <div class="card-body d-flex flex-column">
+                    <div class="icon-box"><i class="bi bi-mortarboard"></i></div>
+                    <h4 class="card-title fw-bold">Graduaciones</h4>
+                    <p class="card-text text-muted flex-grow-1">Paquetes todo incluido: banquetes, decoración y logística para celebrar el éxito.</p>
+                    <p class="price-tag mt-3 border-top pt-2">$450 <small class="text-muted">p/p MXN</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <img src="[https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop)" class="card-img-top" alt="Bodas">
+                <div class="card-body d-flex flex-column">
+                    <div class="icon-box"><i class="bi bi-hearts"></i></div>
+                    <h4 class="card-title fw-bold">Bodas de Gala</h4>
+                    <p class="card-text text-muted flex-grow-1">Elegancia, distinción y menús gourmet personalizados para tu día mágico.</p>
+                    <p class="price-tag mt-3 border-top pt-2">$850 <small class="text-muted">p/p MXN</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <img src="[https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=800&auto=format&fit=crop)" class="card-img-top" alt="Corporativos">
+                <div class="card-body d-flex flex-column">
+                    <div class="icon-box"><i class="bi bi-building-check"></i></div>
+                    <h4 class="card-title fw-bold">Corporativos</h4>
+                    <p class="card-text text-muted flex-grow-1">Puntualidad y profesionalismo para coffee breaks, lanzamientos y cenas empresariales.</p>
+                    <p class="price-tag mt-3 border-top pt-2">$300 <small class="text-muted">p/p MXN</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cotizador -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 cotizador-container">
+            <div class="card p-4 p-md-5 shadow-lg bg-white border-top border-5 cotizador-card" style="border-top-color: var(--secondary-color) !important;">
+                <h3 class="text-center mb-4 fw-bold"><i class="bi bi-calculator me-2 text-secondary"></i>Cotizador Rápido y Reserva</h3>
+                <form id="form-pedido">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">1. Selección de Evento</label>
+                            <select id="tipo-evento" class="form-select form-select-lg" onchange="calcular()">
+                                <option value="450" selected>Graduación ($450 MXN p/p)</option>
+                                <option value="850">Boda de Gala ($850 MXN p/p)</option>
+                                <option value="300">Corporativo ($300 MXN p/p)</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-bold">2. Número de Invitados</label>
+                            <input type="number" id="num-invitados" class="form-control form-control-lg" placeholder="Ej. 100" min="10" value="50" oninput="calcular()">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-bold">3. Fecha Tentativa</label>
+                            <input type="date" id="fecha-evento" class="form-control form-control-lg">
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 my-4 text-center rounded bg-light border border-secondary-subtle">
+                        <h5 class="text-muted mb-1">Presupuesto Estimado</h5>
+                        <h1 class="mb-0 text-success fw-bold" id="display-total">$22,500.00</h1>
+                        <small class="text-muted">*Sujeto a cambios tras validación de logística</small>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary btn-lg w-100 py-3 shadow" onclick="guardarPedido()">
+                        <i class="bi bi-calendar-plus me-2"></i>SOLICITAR RESERVA
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECCIÓN STAFF -->
+<section id="seccion-staff" class="container py-5 hidden">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary-subtle">
+        <h2 style="color: var(--primary-color);"><i class="bi bi-speedometer2 me-2"></i>Panel Operativo Interno</h2>
+        <span class="badge bg-dark px-3 py-2 fs-6 rounded-pill">Módulo Administrativo</span>
+    </div>
+
+    <!-- Alerta y Organigrama Mejorado VISUALMENTE -->
+    <div class="row g-4 mb-5 align-items-stretch">
+        <div class="col-lg-4">
+            <div class="stat-card pico-abril shadow-sm d-flex flex-column justify-content-center">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-1 me-3 accent-red"></i>
+                    <h5 class="card-title mb-0 fw-bold">Riesgo Operativo: Abril</h5>
+                </div>
+                <p class="small mb-2"><strong>Análisis:</strong> Pico de demanda histórico detectado.</p>
+                <ul class="small mb-0">
+                    <li>Garantizar aprovisionamiento.</li>
+                    <li>Activar personal eventual.</li>
+                    <li>Checklist de logística reforzado.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- MEJORA: Organigrama Operativo Visual Real con CSS Jerárquico -->
+        <div class="col-lg-8">
+            <div class="card h-100 bg-white shadow-sm border">
+                <div class="card-header bg-white border-0 pt-3 pb-0 text-center">
+                    <h6 class="text-uppercase text-muted fw-bold mb-0">Estructura de Mando por Evento</h6>
+                </div>
+                <div class="card-body p-0 org-container tree">
+                    <ul>
+                        <li>
+                            <a href="#" class="org-node">
+                                <i class="bi bi-person-badge"></i>Gerencia Evento
+                                <small>Líder del Proyecto</small>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="#" class="org-node">
+                                        <i class="bi bi-egg-fried"></i>Jefe Cocina
+                                        <small>Menú y Calidad</small>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="org-node">
+                                        <i class="bi bi-truck"></i>Logística
+                                        <small>Montaje y Transporte</small>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="org-node">
+                                        <i class="bi bi-person-walking"></i>Capitán Servicio
+                                        <small>Atención Meseros</small>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs y Gráficas Reales ( Chart.js ) -->
+    <div class="row g-4 mb-5">
+        <!-- KPIs Numéricos -->
+        <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center">
+                <i class="bi bi-currency-dollar stat-icon me-3 text-success"></i>
+                <div>
+                    <h6 class="text-muted mb-1">Ingresos Totales (Confirmados)</h6>
+                    <h3 class="fw-bold mb-0 text-success" id="total-revenue">$0.00</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center">
+                <i class="bi bi-calendar-check stat-icon me-3 text-primary"></i>
+                <div>
+                    <h6 class="text-muted mb-1">Eventos Próximos</h6>
+                    <h3 class="fw-bold mb-0" id="upcoming-events">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center">
+                <i class="bi bi-people stat-icon me-3 text-info"></i>
+                <div>
+                    <h6 class="text-muted mb-1">Total Invitados (Global)</h6>
+                    <h3 class="fw-bold mb-0" id="total-guests">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEJORA: Integración de Gráficas Reales con Chart.js -->
+        <div class="col-lg-8">
+            <div class="card bg-white p-3 shadow-sm h-100">
+                <h6 class="fw-bold mb-3 text-muted"><i class="bi bi-bar-chart-line me-2"></i>Evolución de Ingresos Mensuales</h6>
+                <div class="chart-wrapper">
+                    <canvas id="incomeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card bg-white p-3 shadow-sm h-100">
+                <h6 class="fw-bold mb-3 text-muted"><i class="bi bi-pie-chart me-2"></i>Mix de Eventos (%)</h6>
+                <div class="chart-wrapper d-flex justify-content-center align-items-center">
+                    <canvas id="mixChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Eventos Mejorada -->
+    <div class="card bg-white shadow-sm overflow-hidden mb-5">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-list-stars me-2"></i>Agenda Global de Eventos</h5>
+            <!-- Botón demo para testing -->
+            <button class="btn btn-outline-secondary btn-sm text-white border-secondary" onclick="generarDatosDemo()">
+                <i class="bi bi-database-fill-add me-1"></i>Cargar Demo
+            </button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0 align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Fecha <i class="bi bi-sort-down small text-muted"></i></th>
+                        <th>Tipo de Evento</th>
+                        <th>No. Pax</th>
+                        <th>Total Cotizado</th>
+                        <th>Estado</th>
+                        <th>Acciones Operativas</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-pedidos" class="text-center">
+                    <!-- Se llena dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-4 mt-5">
+    <div class="container">
+        <p class="mb-1 fw-bold">Banquetes Catherine S.A de C.V</p>
+        <small class="text-muted">©️ 2023 Sistema de Gestión Interna. Software de demostración v2.0.</small>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js)"></script>
+
+<script>
+    // Variables globales para referencias de gráficas (Chart.js)
+    let incomeChartInstance, mixChartInstance;
+
+    // --- Navegación ---
+    function mostrarSeccion(seccion) {
+        // Ocultar todas
+        document.getElementById('seccion-cliente').classList.add('hidden');
+        document.getElementById('seccion-staff').classList.add('hidden');
+        // Mostrar seleccionada
+        document.getElementById('seccion-' + seccion).classList.remove('hidden');
+        
+        // Actualizar Navbar (active state)
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        document.getElementById('nav-' + seccion).classList.add('active');
+
+        if(seccion === 'staff') cargarDashboardStaff();
+    }
+
+    // --- Lógica Cliente (Cotizador) ---
+    function calcular() {
+        const precio = parseFloat(document.getElementById('tipo-evento').value);
+        const cantidad = parseInt(document.getElementById('num-invitados').value) || 0;
+        
+        const total = precio * cantidad;
+        document.getElementById('display-total').innerText = total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+        return total;
+    }
+
+    function guardarPedido() {
+        const fecha = document.getElementById('fecha-evento').value;
+        const invitados = parseInt(document.getElementById('num-invitados').value);
+        const tipoCombo = document.getElementById('tipo-evento');
+        const tipoTexto = tipoCombo.options[tipoCombo.selectedIndex].text.split(' (')[0];
+        const total = calcular();
+
+        if(!fecha || invitados < 10) {
+            alert("⚠️ Por favor, ingresa una fecha válida y un mínimo de 10 invitados.");
+            return;
+        }
+
+        const pedido = { 
+            id: Date.now(),
+            fecha, 
+            tipo: tipoTexto, 
+            invitados, 
+            total, 
+            status: 'Confirmado' 
+        };
+
+        let historial = JSON.parse(localStorage.getItem('pedidos_catherine_v2')) || [];
+        historial.push(pedido);
+        localStorage.setItem('pedidos_catherine_v2', JSON.stringify(historial));
+
+        alert("✅ Reserva solicitada con éxito. El equipo la revisará pronto.");
+        
+        // Resetear formulario manteniendo defaults
+        document.getElementById('form-pedido').reset();
+        document.getElementById('tipo-evento').value = '450';
+        document.getElementById('num-invitados').value = '50';
+        calcular();
+    }
+
+    // --- Lógica Staff (Dashboard y Tabla) ---
+    function cargarDashboardStaff() {
+        const datos = JSON.parse(localStorage.getItem('pedidos_catherine_v2')) || [];
+        cargarTablaPedidos(datos);
+        actualizarKPIs(datos);
+        inicializarOGraficasReales(datos);
+    }
+
+    // MEJORA: Función para cargar datos demo para testing
+    function generarDatosDemo() {
+        const demoData = [
+            { id: 1, fecha: '2023-11-15', tipo: 'Graduación', invitados: 120, total: 54000, status: 'Confirmado' },
+            { id: 2, fecha: '2023-11-20', tipo: 'Corporativo', invitados: 30, total: 9000, status: 'Confirmado' },
+            { id: 3, fecha: '2023-12-10', tipo: 'Boda de Gala', invitados: 200, total: 170000, status: 'Confirmado' },
+            { id: 4, fecha: '2023-12-22', tipo: 'Corporativo', invitados: 80, total: 24000, status: 'Confirmado' },
+            { id: 5, fecha: '2024-01-05', tipo: 'Boda de Gala', invitados: 150, total: 127500, status: 'Confirmado' }
+        ];
+        localStorage.setItem('pedidos_catherine_v2', JSON.stringify(demoData));
+        cargarDashboardStaff();
+        alert("📊 Datos demo cargados.");
+    }
+
+    function cargarTablaPedidos(datos) {
+        const tabla = document.getElementById('tabla-pedidos');
+        tabla.innerHTML = '';
+
+        if (datos.length === 0) {
+            tabla.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-muted"><i class="bi bi-inbox me-2"></i>No hay eventos registrados.</td></tr>';
+            return;
+        }
+
+        // Ordenar por fecha descendente
+        datos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach((p) => {
+            // Formatear fecha local
+            const fObj = new Date(p.fecha + 'T00:00:00');
+            const fechaFormateada = fObj.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+
+            tabla.innerHTML += `
+                <tr>
+                    <td><b>${fechaFormateada}</b></td>
+                    <td><span class="badge bg-light text-dark border">${p.tipo}</span></td>
+                    <td>${p.invitados} pax</td>
+                    <td class="text-success fw-bold">${p.total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</td>
+                    <td><span class="badge bg-success rounded-pill"><i class="bi bi-check-circle me-1"></i>${p.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="cancelarEvento(${p.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
                 </tr>`;
         });
     }
+
+    function actualizarKPIs(datos) {
+        let totalRevenue = 0;
+        let upcomingEvents = 0;
+        let totalGuests = 0;
+        const now = new Date();
+        now.setHours(0,0,0,0);
+
+        datos.forEach(p => {
+            totalRevenue += p.total;
+            totalGuests += p.invitados;
+            
+            const eventDate = new Date(p.fecha + 'T00:00:00');
+            if (eventDate >= now) {
+                upcomingEvents++;
+            }
+        });
+
+        document.getElementById('total-revenue').innerText = totalRevenue.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+        document.getElementById('upcoming-events').innerText = upcomingEvents;
+        document.getElementById('total-guests').innerText = totalGuests.toLocaleString('es-MX');
+    }
+
+    function cancelarEvento(id) {
+        if (confirm('¿Estás seguro de ELIMINAR definitivamente este evento?')) {
+            let historial = JSON.parse(localStorage.getItem('pedidos_catherine_v2')) || [];
+            historial = historial.filter(p => p.id !== id);
+            localStorage.setItem('pedidos_catherine_v2', JSON.stringify(historial));
+            cargarDashboardStaff();
+        }
+    }
+
+    // MEJORA: Implementación Real de Gráficas usando Chart.js
+    function inicializarOGraficasReales(datos) {
+        // --- Preparar datos para Gráfica de Barras (Ingresos por Mes) ---
+        const revenueByMonth = {};
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+        // Inicializar últimos 6 meses (para que no salga vacía si hay pocos datos)
+        const today = new Date();
+        for(let i=5; i>=0; i--) {
+            const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`;
+            revenueByMonth[key] = 0;
+        }
+
+        // Llenar con datos reales
+        datos.forEach(p => {
+            const date = new Date(p.fecha + 'T00:00:00');
+            const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}`;
+            if (revenueByMonth.hasOwnProperty(key)) {
+                revenueByMonth[key] += p.total;
+            }
+        });
+
+        const barLabels = Object.keys(revenueByMonth).map(key => {
+            const [year, month] = key.split('-');
+            return `${monthNames[parseInt(month)-1]} ${year.slice(-2)}`;
+        });
+        const barData = Object.values(revenueByMonth);
+
+        // --- Preparar datos para Gráfica de Dona (Mix Eventos) ---
+        const eventTypesCount = {};
+        datos.forEach(p => {
+            eventTypesCount[p.tipo] = (eventTypesCount[p.tipo] || 0) + 1;
+        });
+
+        const mixLabels = Object.keys(eventTypesCount);
+        const mixData = Object.values(eventTypesCount);
+
+        // --- Renderizar / Actualizar Barras ---
+        const ctxBar = document.getElementById('incomeChart').getContext('2d');
+        if (incomeChartInstance) incomeChartInstance.destroy();
+        incomeChartInstance = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: barLabels,
+                datasets: [{
+                    label: 'Ingresos MXN',
+                    data: barData,
+                    backgroundColor: '#34495e',
+                    borderColor: '#2c3e50',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: value => '$' + value.toLocaleString('es-MX') }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // --- Renderizar / Actualizar Dona ---
+        const ctxMix = document.getElementById('mixChart').getContext('2d');
+        if (mixChartInstance) mixChartInstance.destroy();
+        mixChartInstance = new Chart(ctxMix, {
+            type: 'doughnut',
+            data: {
+                labels: mixLabels,
+                datasets: [{
+                    data: mixData,
+                    backgroundColor: ['#f1c40f', '#34495e', '#e74c3c', '#2ecc71'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                }
+            }
+        });
+    }
+
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set default date today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fecha-evento').value = today;
+        calcular();
+    });
 </script>
 
 </body>
